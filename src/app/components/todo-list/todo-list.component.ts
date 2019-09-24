@@ -3,9 +3,12 @@ import {
   ViewChild,
   ElementRef,
   ChangeDetectionStrategy,
+  OnInit,
 } from '@angular/core';
 import { Todo } from 'src/app/models/Todo';
 import { immutableSplice } from 'src/utils/array';
+import { TodoListService } from 'src/app/services/todo-list.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-todo-list',
@@ -13,32 +16,44 @@ import { immutableSplice } from 'src/utils/array';
   styleUrls: ['./todo-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TodoListComponent {
+export class TodoListComponent implements OnInit {
   @ViewChild('todoInput', { static: false }) todoInput: ElementRef<
     HTMLInputElement
   >;
-  private todoList: Todo[] = [];
-
   private showCompletedTodos = false;
+  private todos: Todo[];
+  private todoListCreatedAt: number;
 
-  get todos(): Todo[] {
-    return this.todoList;
+  constructor(
+    private route: ActivatedRoute,
+    private todoListService: TodoListService,
+  ) {
+    this.todoListCreatedAt = Number(
+      this.route.snapshot.paramMap.get('created'),
+    );
+  }
+
+  getTodos() {
+    this.todos = this.todoListService
+      .getTodoList(this.todoListCreatedAt)
+      .getTodos();
   }
 
   addTodo(title: string): void {
     if (!title) {
       return;
     }
-    this.todoList = [...this.todoList, Todo.create(title)];
+    this.todoListService.addTodoToList(title, this.todoListCreatedAt);
+    this.getTodos();
     this.todoInput.nativeElement.value = '';
   }
 
   updateTodo(todo: Todo) {
-    this.todoList = immutableSplice(
-      this.todoList,
-      this.todoList.findIndex(t => t.created === todo.created),
-      1,
-      todo,
-    );
+    this.todoListService.updateTodoInList(todo, this.todoListCreatedAt);
+    this.getTodos();
+  }
+
+  ngOnInit() {
+    this.getTodos();
   }
 }

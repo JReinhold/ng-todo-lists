@@ -14,7 +14,7 @@ import { TodoListsComponent } from './components/todo-lists/todo-lists.component
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: TodoListsComponent },
-      { path: 'list/:listId', component: TodoListComponent },
+      { path: 'list/:created', component: TodoListComponent },
     ]),
   ],
   bootstrap: [AppComponent],

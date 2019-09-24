@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { TodoList } from 'src/app/models/TodoList';
+import { TodoListService } from 'src/app/services/todo-list.service';
 
 @Component({
   selector: 'app-todo-lists',
@@ -12,15 +13,22 @@ export class TodoListsComponent implements OnInit {
   >;
   private todoLists: TodoList[] = [];
 
-  constructor() {}
+  constructor(private todoListService: TodoListService) {}
 
   addTodoList(title: string): void {
     if (!title) {
       return;
     }
-    this.todoLists = [...this.todoLists, TodoList.create(title)];
+    this.todoListService.addTodoList(title);
     this.listInput.nativeElement.value = '';
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.todoListService.getTodoLists().subscribe(todoLists => {
+      this.todoLists = todoLists;
+    });
+    this.todoListService.$todoListsChange.subscribe(todoLists => {
+      this.todoLists = todoLists;
+    });
+  }
 }
