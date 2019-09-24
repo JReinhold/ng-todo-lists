@@ -6,7 +6,6 @@ import {
   OnInit,
 } from '@angular/core';
 import { Todo } from 'src/app/models/Todo';
-import { immutableSplice } from 'src/utils/array';
 import { TodoListService } from 'src/app/services/todo-list.service';
 import { ActivatedRoute } from '@angular/router';
 

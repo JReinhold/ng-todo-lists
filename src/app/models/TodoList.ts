@@ -25,6 +25,16 @@ export class TodoList {
     return this.todos;
   }
 
+  public getListDescription(): string {
+    if (!this.todos.length) {
+      return '0 todos';
+    }
+    if (this.todos.every(todo => todo.completed)) {
+      return 'All done! 🚀';
+    }
+    return `${this.todos.filter(todo => !todo.completed).length} todos to do`;
+  }
+
   protected constructor(
     public readonly title: string,
     public readonly created: number,
