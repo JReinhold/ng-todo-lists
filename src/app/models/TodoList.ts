@@ -32,7 +32,14 @@ export class TodoList {
     if (this.todos.every(todo => todo.completed)) {
       return 'All done! 🚀';
     }
-    return `${this.todos.filter(todo => !todo.completed).length} todos to do`;
+    const numOfIncompleteTodos = this.todos.filter(todo => !todo.completed)
+      .length;
+
+    if (numOfIncompleteTodos === 1) {
+      return `1 todo to do`;
+    }
+
+    return `${numOfIncompleteTodos} todos to do`;
   }
 
   protected constructor(
