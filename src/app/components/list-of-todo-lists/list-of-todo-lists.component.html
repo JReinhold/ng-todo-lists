@@ -1,0 +1,26 @@
+<main class="app">
+  <header class="app__header py-3">
+    <h3 class="text-center m-0">
+      Not Another Todo App
+    </h3>
+  </header>
+
+  <div class="container">
+    <ul class="reset todo-list-list">
+      <li *ngFor="let todoList of todoLists" class="clicky todo-list__item">
+        <a routerLink="/list/{{ todoList.created }}">
+          {{ todoList.title }} {{ todoList.getListDescription() }}
+        </a>
+      </li>
+    </ul>
+    <form class="mt-3" (ngSubmit)="addTodoList(listInput.value)" novalidate>
+      <input
+        #listInput
+        class="new-input"
+        type="text"
+        placeholder="New list"
+        required
+      />
+    </form>
+  </div>
+</main>

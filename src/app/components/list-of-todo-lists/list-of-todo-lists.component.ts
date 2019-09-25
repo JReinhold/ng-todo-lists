@@ -8,20 +8,24 @@ import {
 import { TodoList } from 'src/app/models/TodoList';
 import { TodoListService } from 'src/app/services/todo-list.service';
 import { Subscription } from 'rxjs';
+import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-todo-lists',
-  templateUrl: './todo-lists.component.html',
-  styleUrls: ['./todo-lists.component.scss'],
+  selector: 'app-list-of-todo-lists',
+  templateUrl: './list-of-todo-lists.component.html',
+  styleUrls: ['./list-of-todo-lists.component.scss'],
 })
-export class TodoListsComponent implements OnInit, OnDestroy {
+export class ListOfTodoListsComponent implements OnInit, OnDestroy {
   @ViewChild('listInput', { static: false }) listInput: ElementRef<
     HTMLInputElement
   >;
   private todoLists: TodoList[] = [];
   private todoListSubscription = new Subscription();
 
-  constructor(private todoListService: TodoListService) {}
+  constructor(
+    private todoListService: TodoListService,
+    private titleService: Title,
+  ) {}
 
   addTodoList(title: string): void {
     if (!title) {
@@ -32,6 +36,8 @@ export class TodoListsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Not Another Todo App');
+
     this.todoListSubscription.add(
       this.todoListService.getTodoLists().subscribe(todoLists => {
         this.todoLists = todoLists;

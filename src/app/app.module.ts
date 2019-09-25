@@ -5,15 +5,15 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { TodoListComponent } from './components/todo-list/todo-list.component';
-import { TodoListsComponent } from './components/todo-lists/todo-lists.component';
+import { ListOfTodoListsComponent } from './components/list-of-todo-lists/list-of-todo-lists.component';
 
 @NgModule({
-  declarations: [AppComponent, TodoListComponent, TodoListsComponent],
+  declarations: [AppComponent, TodoListComponent, ListOfTodoListsComponent],
   imports: [
     BrowserModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: TodoListsComponent },
+      { path: '', component: ListOfTodoListsComponent },
       { path: 'list/:created', component: TodoListComponent },
     ]),
   ],

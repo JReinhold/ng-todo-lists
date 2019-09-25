@@ -1,3 +1,36 @@
+@import '../styles/variables.scss';
+
+:host {
+  height: 100%;
+}
+
+.app {
+  height: 100%;
+  width: 100%;
+  background: white;
+  overflow: hidden;
+
+  &__header {
+    color: white;
+    background: $primary;
+  }
+}
+
+@media (min-width: $desktop-breakpoint) {
+  :host {
+    display: flex;
+    justify-content: center;
+    padding-top: 10vh;
+    background: $dark;
+  }
+
+  .app {
+    height: 700px;
+    width: 400px;
+    border-radius: 1rem;
+  }
+}
+
 .new-input {
   border: 0;
   outline: 0;

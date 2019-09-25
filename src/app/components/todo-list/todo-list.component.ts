@@ -10,6 +10,8 @@ import { Todo } from 'src/app/models/Todo';
 import { TodoListService } from 'src/app/services/todo-list.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { TodoList } from 'src/app/models/TodoList';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-todo-list',
@@ -22,30 +24,35 @@ export class TodoListComponent implements OnInit, OnDestroy {
     HTMLInputElement
   >;
   private showCompletedTodos = false;
-  private todos: Todo[];
-  private todoListCreatedAt: number;
+  private todoList: TodoList;
   private todoListSubscription = new Subscription();
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private todoListService: TodoListService,
+    private titleService: Title,
   ) {
-    this.todoListCreatedAt = Number(
+    const todoListCreatedAt = Number(
       this.activatedRoute.snapshot.paramMap.get('created'),
     );
+    this.todoList = this.todoListService.getTodoList(todoListCreatedAt);
+  }
+
+  get todos(): Todo[] {
+    return this.todoList.getTodos();
   }
 
   addTodo(title: string): void {
     if (!title) {
       return;
     }
-    this.todoListService.addTodoToList(title, this.todoListCreatedAt);
+    this.todoListService.addTodoToList(title, this.todoList.created);
     this.todoInput.nativeElement.value = '';
   }
 
   updateTodo(todo: Todo) {
-    this.todoListService.updateTodoInList(todo, this.todoListCreatedAt);
+    this.todoListService.updateTodoInList(todo, this.todoList.created);
   }
 
   changeShowCompleted(showCompleted: boolean) {
@@ -62,16 +69,17 @@ export class TodoListComponent implements OnInit, OnDestroy {
     });
     this.todoListSubscription.add(
       this.todoListService.getTodoLists().subscribe(todoLists => {
-        this.todos = todoLists
-          .find(todoList => todoList.created === this.todoListCreatedAt)
-          .getTodos();
+        this.todoList = todoLists.find(
+          todoList => todoList.created === this.todoList.created,
+        );
+        this.titleService.setTitle(this.todoList.title);
       }),
     );
     this.todoListSubscription.add(
       this.todoListService.$todoListsChange.subscribe(todoLists => {
-        this.todos = todoLists
-          .find(todoList => todoList.created === this.todoListCreatedAt)
-          .getTodos();
+        this.todoList = todoLists.find(
+          todoList => todoList.created === this.todoList.created,
+        );
       }),
     );
   }
