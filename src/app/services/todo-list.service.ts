@@ -8,7 +8,7 @@ import { Todo } from '../models/Todo';
   providedIn: 'root',
 })
 export class TodoListService {
-  private todoLists: TodoList[] = [];
+  private todoLists: TodoList[] = [TodoList.create('Initial List', 100)];
   $selectedTodoListChange = new Subject<TodoList | null>();
   $todoListsChange = new Subject<TodoList[]>();
 
@@ -17,9 +17,11 @@ export class TodoListService {
     return of(this.todoLists);
   }
 
-  addTodoList(title: string): void {
-    this.todoLists.push(TodoList.create(title));
+  addTodoList(title: string): TodoList {
+    const newTodoList = TodoList.create(title);
+    this.todoLists.push(newTodoList);
     this.$todoListsChange.next(this.todoLists);
+    return newTodoList;
   }
 
   getTodoList(listCreated: number): TodoList {

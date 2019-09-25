@@ -1,7 +1,11 @@
 <div class="container">
   <label>
     Show Completed
-    <input type="checkbox" [(ngModel)]="showCompletedTodos" />
+    <input
+      type="checkbox"
+      [ngModel]="showCompletedTodos"
+      (ngModelChange)="changeShowCompleted($event)"
+    />
   </label>
   <ul class="reset todo-list">
     <ng-container *ngFor="let todo of todos">
@@ -25,4 +29,7 @@
       required
     />
   </form>
+  <a routerLink="/">
+    Back
+  </a>
 </div>

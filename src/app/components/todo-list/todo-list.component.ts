@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Todo } from 'src/app/models/Todo';
 import { TodoListService } from 'src/app/services/todo-list.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-todo-list',
@@ -24,11 +24,12 @@ export class TodoListComponent implements OnInit {
   private todoListCreatedAt: number;
 
   constructor(
-    private route: ActivatedRoute,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
     private todoListService: TodoListService,
   ) {
     this.todoListCreatedAt = Number(
-      this.route.snapshot.paramMap.get('created'),
+      this.activatedRoute.snapshot.paramMap.get('created'),
     );
   }
 
@@ -52,7 +53,18 @@ export class TodoListComponent implements OnInit {
     this.getTodos();
   }
 
+  changeShowCompleted(showCompleted: boolean) {
+    this.showCompletedTodos = showCompleted;
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: { showCompleted },
+    });
+  }
+
   ngOnInit() {
     this.getTodos();
+    this.activatedRoute.queryParamMap.subscribe(queryParams => {
+      this.showCompletedTodos = queryParams.get('showCompleted') === 'true';
+    });
   }
 }
