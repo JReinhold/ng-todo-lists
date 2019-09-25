@@ -13,6 +13,9 @@ import { Subscription } from 'rxjs';
 import { TodoList } from 'src/app/models/TodoList';
 import { Title } from '@angular/platform-browser';
 
+/**
+ * The component that shows a todo list
+ */
 @Component({
   selector: 'app-todo-list',
   templateUrl: './todo-list.component.html',
@@ -23,27 +26,23 @@ export class TodoListComponent implements OnInit, OnDestroy {
   @ViewChild('todoInput', { static: false }) todoInput: ElementRef<
     HTMLInputElement
   >;
+  // this is synced with the query param
   private showCompletedTodos = false;
   private todoList: TodoList;
-  private todoListSubscription = new Subscription();
+  private subscriptions = new Subscription();
+
+  get todos(): Todo[] {
+    return this.todoList.getTodos();
+  }
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private todoListService: TodoListService,
     private titleService: Title,
-  ) {
-    const todoListCreatedAt = Number(
-      this.activatedRoute.snapshot.paramMap.get('created'),
-    );
-    this.todoList = this.todoListService.getTodoList(todoListCreatedAt);
-  }
+  ) {}
 
-  get todos(): Todo[] {
-    return this.todoList.getTodos();
-  }
-
-  addTodo(title: string): void {
+  private addTodo(title: string): void {
     if (!title) {
       return;
     }
@@ -51,11 +50,14 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.todoInput.nativeElement.value = '';
   }
 
-  updateTodo(todo: Todo) {
+  private updateTodo(todo: Todo) {
     this.todoListService.updateTodoInList(todo, this.todoList.created);
   }
 
-  changeShowCompleted(showCompleted: boolean) {
+  /**
+   * sets local boolean on showComplete change, as well as updates the query param
+   */
+  private changeShowCompleted(showCompleted: boolean) {
     this.showCompletedTodos = showCompleted;
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
@@ -64,27 +66,36 @@ export class TodoListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.activatedRoute.queryParamMap.subscribe(queryParams => {
-      this.showCompletedTodos = queryParams.get('showCompleted') === 'true';
-    });
-    this.todoListSubscription.add(
+    const todoListCreatedAt = Number(
+      this.activatedRoute.snapshot.paramMap.get('created'),
+    );
+
+    // subscribe to changes in 'showComplete' query param
+    this.subscriptions.add(
+      this.activatedRoute.queryParamMap.subscribe(queryParams => {
+        this.showCompletedTodos = queryParams.get('showCompleted') === 'true';
+      }),
+    );
+    // get todo list from todoListService
+    this.subscriptions.add(
       this.todoListService.getTodoLists().subscribe(todoLists => {
         this.todoList = todoLists.find(
-          todoList => todoList.created === this.todoList.created,
+          todoList => todoList.created === todoListCreatedAt,
         );
         this.titleService.setTitle(this.todoList.title);
       }),
     );
-    this.todoListSubscription.add(
+    // subscripe to todoList changes in todoListService
+    this.subscriptions.add(
       this.todoListService.$todoListsChange.subscribe(todoLists => {
         this.todoList = todoLists.find(
-          todoList => todoList.created === this.todoList.created,
+          todoList => todoList.created === todoListCreatedAt,
         );
       }),
     );
   }
 
   ngOnDestroy() {
-    this.todoListSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 }

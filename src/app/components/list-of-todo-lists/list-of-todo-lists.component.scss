@@ -1,2 +1,22 @@
 @import '../../../styles/variables.scss';
 @import '../../core.styles.scss';
+
+.list-of-todo-lists {
+  &__item {
+    padding: 0.25rem 0.5rem;
+    color: $gray;
+    border: 1px solid $gray;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.25rem;
+
+    &-title {
+      font-weight: bold;
+    }
+
+    &-description {
+      font-size: 0.75rem;
+    }
+  }
+}

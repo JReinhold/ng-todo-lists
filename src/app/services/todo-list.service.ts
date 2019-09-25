@@ -4,6 +4,10 @@ import { Observable, Subject, of } from 'rxjs';
 import { immutableSplice } from 'src/utils/array';
 import { Todo } from '../models/Todo';
 
+/**
+ * The service that keeps track of all todo lists, and their todos
+ * The $todoListsChange will update whenever the list of lists changes, and when a todolist's todos changes
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -19,10 +23,6 @@ export class TodoListService {
   addTodoList(title: string): void {
     this.todoLists.push(TodoList.create(title));
     this.$todoListsChange.next(this.todoLists);
-  }
-
-  getTodoList(listCreated: number): TodoList {
-    return this.todoLists.find(todoList => todoList.created === listCreated);
   }
 
   addTodoToList(title: string, listCreated: number): void {

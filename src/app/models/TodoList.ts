@@ -1,6 +1,10 @@
 import { Todo } from './Todo';
 import { immutableSplice } from 'src/utils/array';
 
+/**
+ * The class that represents a Todo List, with Todos
+ * each todo list have a title, and is identified by the timestamp it is created at
+ */
 export class TodoList {
   private todos: Todo[] = [];
 
@@ -19,26 +23,6 @@ export class TodoList {
       1,
       todo,
     ).sort(this.compareTodos);
-  }
-
-  /**
-   * compare function that sorts completed todos first, then oldest todos
-   */
-  private compareTodos(thisTodo: Todo, otherTodo: Todo): number {
-    // sort this first if this is completed, and the other isn't
-    if (thisTodo.completed && !otherTodo.completed) {
-      return -1;
-    }
-    // sort this last if this isn't completed, and the other is
-    if (!thisTodo.completed && otherTodo.completed) {
-      return 1;
-    }
-    // sort by creation date, oldest first
-    return thisTodo.created.getTime() - otherTodo.created.getTime();
-  }
-
-  public getTodos(): Todo[] {
-    return this.todos;
   }
 
   /**
@@ -66,4 +50,24 @@ export class TodoList {
     public readonly title: string,
     public readonly created: number,
   ) {}
+
+  /**
+   * compare function that sorts completed todos first, then oldest todos
+   */
+  private compareTodos(thisTodo: Todo, otherTodo: Todo): number {
+    // sort this first if this is completed, and the other isn't
+    if (thisTodo.completed && !otherTodo.completed) {
+      return -1;
+    }
+    // sort this last if this isn't completed, and the other is
+    if (!thisTodo.completed && otherTodo.completed) {
+      return 1;
+    }
+    // sort by creation date, oldest first
+    return thisTodo.created.getTime() - otherTodo.created.getTime();
+  }
+
+  public getTodos(): Todo[] {
+    return this.todos;
+  }
 }

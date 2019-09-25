@@ -6,10 +6,19 @@
   </header>
 
   <div class="container">
-    <ul class="reset todo-list-list">
-      <li *ngFor="let todoList of todoLists" class="clicky todo-list__item">
-        <a routerLink="/list/{{ todoList.created }}">
-          {{ todoList.title }} {{ todoList.getListDescription() }}
+    <ul class="reset list-of-todo-lists">
+      <li *ngFor="let todoList of todoLists">
+        <a
+          routerLink="/list/{{ todoList.created }}"
+          queryParamsHandling="preserve"
+          class="clicky list-of-todo-lists__item"
+        >
+          <span class="list-of-todo-lists__item-title"
+            >{{ todoList.title }}
+          </span>
+          <span class="list-of-todo-lists__item-description">{{
+            todoList.getListDescription()
+          }}</span>
         </a>
       </li>
     </ul>

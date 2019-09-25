@@ -5,6 +5,18 @@
   padding: 1rem 2rem;
 }
 
+.show-completed {
+  &__label {
+    color: $gray;
+    display: flex;
+    align-items: center;
+  }
+
+  &__checkbox {
+    margin-right: 0.25rem;
+  }
+}
+
 .todo-list {
   &__item {
     padding: 0.25rem 0.5rem;

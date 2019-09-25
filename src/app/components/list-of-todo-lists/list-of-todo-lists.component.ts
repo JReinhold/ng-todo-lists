@@ -10,6 +10,9 @@ import { TodoListService } from 'src/app/services/todo-list.service';
 import { Subscription } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 
+/**
+ * The component that shows the list of todo lists
+ */
 @Component({
   selector: 'app-list-of-todo-lists',
   templateUrl: './list-of-todo-lists.component.html',
@@ -20,7 +23,7 @@ export class ListOfTodoListsComponent implements OnInit, OnDestroy {
     HTMLInputElement
   >;
   private todoLists: TodoList[] = [];
-  private todoListSubscription = new Subscription();
+  private subscriptions = new Subscription();
 
   constructor(
     private todoListService: TodoListService,
@@ -38,12 +41,12 @@ export class ListOfTodoListsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.titleService.setTitle('Not Another Todo App');
 
-    this.todoListSubscription.add(
+    this.subscriptions.add(
       this.todoListService.getTodoLists().subscribe(todoLists => {
         this.todoLists = todoLists;
       }),
     );
-    this.todoListSubscription.add(
+    this.subscriptions.add(
       this.todoListService.$todoListsChange.subscribe(todoLists => {
         this.todoLists = todoLists;
       }),
@@ -51,6 +54,6 @@ export class ListOfTodoListsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.todoListSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 }
