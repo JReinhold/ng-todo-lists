@@ -9,7 +9,6 @@ import { Todo } from '../models/Todo';
 })
 export class TodoListService {
   private todoLists: TodoList[] = [TodoList.create('Initial List', 100)];
-  $selectedTodoListChange = new Subject<TodoList | null>();
   $todoListsChange = new Subject<TodoList[]>();
 
   getTodoLists(): Observable<TodoList[]> {
@@ -17,11 +16,9 @@ export class TodoListService {
     return of(this.todoLists);
   }
 
-  addTodoList(title: string): TodoList {
-    const newTodoList = TodoList.create(title);
-    this.todoLists.push(newTodoList);
+  addTodoList(title: string): void {
+    this.todoLists.push(TodoList.create(title));
     this.$todoListsChange.next(this.todoLists);
-    return newTodoList;
   }
 
   getTodoList(listCreated: number): TodoList {

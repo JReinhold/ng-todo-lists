@@ -1,17 +1,25 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  OnDestroy,
+} from '@angular/core';
 import { TodoList } from 'src/app/models/TodoList';
 import { TodoListService } from 'src/app/services/todo-list.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-todo-lists',
   templateUrl: './todo-lists.component.html',
   styleUrls: ['./todo-lists.component.scss'],
 })
-export class TodoListsComponent implements OnInit {
+export class TodoListsComponent implements OnInit, OnDestroy {
   @ViewChild('listInput', { static: false }) listInput: ElementRef<
     HTMLInputElement
   >;
   private todoLists: TodoList[] = [];
+  private todoListSubscription = new Subscription();
 
   constructor(private todoListService: TodoListService) {}
 
@@ -24,11 +32,19 @@ export class TodoListsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.todoListService.getTodoLists().subscribe(todoLists => {
-      this.todoLists = todoLists;
-    });
-    this.todoListService.$todoListsChange.subscribe(todoLists => {
-      this.todoLists = todoLists;
-    });
+    this.todoListSubscription.add(
+      this.todoListService.getTodoLists().subscribe(todoLists => {
+        this.todoLists = todoLists;
+      }),
+    );
+    this.todoListSubscription.add(
+      this.todoListService.$todoListsChange.subscribe(todoLists => {
+        this.todoLists = todoLists;
+      }),
+    );
+  }
+
+  ngOnDestroy() {
+    this.todoListSubscription.unsubscribe();
   }
 }
