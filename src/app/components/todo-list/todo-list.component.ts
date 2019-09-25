@@ -4,10 +4,12 @@ import {
   ElementRef,
   ChangeDetectionStrategy,
   OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { Todo } from 'src/app/models/Todo';
 import { TodoListService } from 'src/app/services/todo-list.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-todo-list',
@@ -15,13 +17,14 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./todo-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TodoListComponent implements OnInit {
+export class TodoListComponent implements OnInit, OnDestroy {
   @ViewChild('todoInput', { static: false }) todoInput: ElementRef<
     HTMLInputElement
   >;
   private showCompletedTodos = false;
   private todos: Todo[];
   private todoListCreatedAt: number;
+  private todoListSubscription = new Subscription();
 
   constructor(
     private router: Router,
@@ -33,24 +36,16 @@ export class TodoListComponent implements OnInit {
     );
   }
 
-  getTodos() {
-    this.todos = this.todoListService
-      .getTodoList(this.todoListCreatedAt)
-      .getTodos();
-  }
-
   addTodo(title: string): void {
     if (!title) {
       return;
     }
     this.todoListService.addTodoToList(title, this.todoListCreatedAt);
-    this.getTodos();
     this.todoInput.nativeElement.value = '';
   }
 
   updateTodo(todo: Todo) {
     this.todoListService.updateTodoInList(todo, this.todoListCreatedAt);
-    this.getTodos();
   }
 
   changeShowCompleted(showCompleted: boolean) {
@@ -62,9 +57,26 @@ export class TodoListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getTodos();
     this.activatedRoute.queryParamMap.subscribe(queryParams => {
       this.showCompletedTodos = queryParams.get('showCompleted') === 'true';
     });
+    this.todoListSubscription.add(
+      this.todoListService.getTodoLists().subscribe(todoLists => {
+        this.todos = todoLists
+          .find(todoList => todoList.created === this.todoListCreatedAt)
+          .getTodos();
+      }),
+    );
+    this.todoListSubscription.add(
+      this.todoListService.$todoListsChange.subscribe(todoLists => {
+        this.todos = todoLists
+          .find(todoList => todoList.created === this.todoListCreatedAt)
+          .getTodos();
+      }),
+    );
+  }
+
+  ngOnDestroy() {
+    this.todoListSubscription.unsubscribe();
   }
 }
