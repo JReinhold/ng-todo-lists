@@ -12,6 +12,7 @@ import { Todo } from '../models/Todo';
   providedIn: 'root',
 })
 export class TodoListService {
+  // we start with a single todolist, to make it possible to reload the page at /list/100, to test the showComplete query parameter
   private todoLists: TodoList[] = [TodoList.create('Initial List', 100)];
   $todoListsChange = new Subject<TodoList[]>();
 
